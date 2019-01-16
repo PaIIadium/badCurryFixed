@@ -1,0 +1,2 @@
+# badCurryFixed
+Fixed currybad example
