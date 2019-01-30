@@ -8,29 +8,29 @@ const curry = fn => (...args) => (
   ) : fn(...args)
 );
 
-function curryProto(fn) {                                    // та же curry (слегка изменена)
+function curryProto(fn) {                                   
 	return function(...args) {
-		if (fn.length > args.length) {						 // если аргументов НЕдостаточно
-			return curry1(function(...args2) {               // у function(...args2) свойство fn.length = 0!!!  
-						return fn(...args.concat(args2));	 // Поэтому при следующем цикле рекурсии условие if не
-					})										 // срабатывает и даже если аргументов недостаточно, то
-		}											 		 // всё равно выполняется else.
-		else return fn(...args);							 // если аргументов достаточно
-	}
-}
-
-function curryFixedProto(fn, fnLength = fn.length) {         // Добавляем свойство fnLength, которое будет                        
-	return function(...args) {								 // указывать на количество оставшихся требуемых
-		if (fnLength > args.length) { 						 // аргументов. Изначально равно количеству
-			return curryFixed(function(...args2) {           // аргументов в каррируемой функции, потом в ходе
-						return fn(...args.concat(args2))	 // рекурсии уменьшается на количество добавленных
-						}, fnLength - args.length)			 // аргументов.					 											 
+		if (fn.length > args.length) {
+			return curry1(function(...args2) {
+						return fn(...args.concat(args2));
+					})
 		}
-		else return fn(...args);							 
+		else return fn(...args);
 	}
 }
 
-const curryFixed = (fn, fnLength = fn.length) => (...args) => (  // свёрнутая curryFixedProto
+function curryFixedProto(fn, fnLength = fn.length) {
+	return function(...args) {								
+		if (fnLength > args.length) { 						
+			return curryFixedProto(function(...args2) {
+						return fn(...args.concat(args2))
+						}, fnLength - args.length)
+		}
+		else return fn(...args);
+	}
+}
+
+const curryFixed = (fn, fnLength = fn.length) => (...args) => (
 	fnLength > args.length ? curryFixed(
 		(...args2) => fn(...args.concat(args2)), 
 		fnLength - args.length
